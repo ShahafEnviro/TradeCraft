@@ -1,0 +1,12 @@
+<resources>
+    <string name="app_name">TradeCraft</string>
+
+    <string name="hint_email">Email</string>
+    <string name="hint_password">Password</string>
+    <string name="action_login">Login</string>
+    <string name="action_signup">Sign Up</string>
+    <string name="action_logout">Logout</string>
+    <string name="error_empty_fields">Please enter both email and password.</string>
+    <string name="welcome_message">Welcome, %1$s</string>
+    <string name="balance_format">Balance: $%.2f</string>
+</resources>
