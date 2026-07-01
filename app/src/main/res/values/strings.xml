@@ -8,5 +8,5 @@
     <string name="action_logout">Logout</string>
     <string name="error_empty_fields">Please enter both email and password.</string>
     <string name="welcome_message">Welcome, %1$s</string>
-    <string name="balance_format">Balance: $%.2f</string>
+    <string name="balance_label">Current Balance</string>
 </resources>

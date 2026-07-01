@@ -13,8 +13,13 @@ import androidx.lifecycle.ViewModelProvider;
 import com.example.tradecraft.R;
 import com.example.tradecraft.viewmodel.AuthViewModel;
 
+import java.text.NumberFormat;
+import java.util.Locale;
+
 /** Placeholder home screen: shows the logged-in user's email and starting balance. */
 public class MainActivity extends AppCompatActivity {
+
+    private final NumberFormat currencyFormat = NumberFormat.getCurrencyInstance(Locale.US);
 
     private AuthViewModel viewModel;
 
@@ -36,7 +41,7 @@ public class MainActivity extends AppCompatActivity {
         viewModel.getUser().observe(this, user -> {
             if (user != null) {
                 welcomeText.setText(getString(R.string.welcome_message, user.getEmail()));
-                balanceText.setText(getString(R.string.balance_format, user.getBalance()));
+                balanceText.setText(currencyFormat.format(user.getBalance()));
             }
         });
 

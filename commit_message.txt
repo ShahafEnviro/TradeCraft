@@ -1,0 +1,10 @@
+Add Phase 1: Firebase email/password auth + MVVM setup
+
+- UserRepository (singleton) wraps FirebaseAuth + Firestore behind
+  RepositoryCallback<T>; sign-up creates auth user + users/{uid}
+  profile (seed balance 100000), rolling back on partial failure
+- AuthViewModel exposes user/error/loading LiveData
+- LoginActivity (auto-skips if logged in) + MainActivity (welcome,
+  balance, logout)
+- Wire up Firebase BoM, auth, firestore, lifecycle-viewmodel/livedata,
+  google-services plugin, INTERNET permission
