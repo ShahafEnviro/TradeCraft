@@ -2,4 +2,36 @@
 <resources>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+
+    <!-- Neutrals: dark surface hierarchy -->
+    <color name="app_background">#121016</color>
+    <color name="on_background">#FFFFFF</color>
+    <color name="surface">#1C1822</color>
+    <color name="on_surface">#F5F3F7</color>
+    <color name="surface_variant">#241F2D</color>
+    <color name="on_surface_variant">#A79FB0</color>
+    <color name="outline">#3A3345</color>
+
+    <!-- Brand: violet primary, pink/red secondary -->
+    <color name="brand_primary">#A78BFA</color>
+    <color name="brand_primary_variant">#7C3AED</color>
+    <color name="on_primary">#FFFFFF</color>
+    <color name="primary_container">#2E2149</color>
+    <color name="on_primary_container">#E4D9FF</color>
+
+    <color name="brand_secondary">#FB5B7C</color>
+    <color name="on_secondary">#FFFFFF</color>
+    <color name="secondary_container">#3A1520</color>
+    <color name="on_secondary_container">#FFD9E1</color>
+
+    <!-- Primary CTA gradient: red -> purple, left to right -->
+    <color name="gradient_start">#F43F5E</color>
+    <color name="gradient_end">#7C3AED</color>
+
+    <color name="error">#FF6B6B</color>
+    <color name="on_error">#3B0A0A</color>
+
+    <!-- Semantic finance colors, reserved for P/L display in later phases -->
+    <color name="profit_green">#4ADE80</color>
+    <color name="loss_red">#FF6B6B</color>
 </resources>
