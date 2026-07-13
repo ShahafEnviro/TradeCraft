@@ -98,4 +98,9 @@ public class AuthViewModel extends ViewModel {
         userLiveData.setValue(null);
         loggedOutLiveData.setValue(true);
     }
+
+    /** Clears any pending error so switching between Sign In/Sign Up doesn't show a stale message. */
+    public void clearError() {
+        errorLiveData.setValue(null);
+    }
 }
