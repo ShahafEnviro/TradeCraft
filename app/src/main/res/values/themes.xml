@@ -1,9 +1,94 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <!-- Base application theme. -->
-    <style name="Base.Theme.TradeCraft" parent="Theme.Material3.DayNight.NoActionBar">
-        <!-- Customize your light theme here. -->
-        <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
+    <!-- Base application theme: forced-dark Material 3, color roles mapped to the TradeCraft brand palette. -->
+    <style name="Base.Theme.TradeCraft" parent="Theme.Material3.Dark.NoActionBar">
+        <item name="colorPrimary">@color/brand_primary</item>
+        <item name="colorOnPrimary">@color/on_primary</item>
+        <item name="colorPrimaryContainer">@color/primary_container</item>
+        <item name="colorOnPrimaryContainer">@color/on_primary_container</item>
+
+        <item name="colorSecondary">@color/brand_secondary</item>
+        <item name="colorOnSecondary">@color/on_secondary</item>
+        <item name="colorSecondaryContainer">@color/secondary_container</item>
+        <item name="colorOnSecondaryContainer">@color/on_secondary_container</item>
+
+        <item name="android:colorBackground">@color/app_background</item>
+        <item name="colorOnBackground">@color/on_background</item>
+        <item name="colorSurface">@color/surface</item>
+        <item name="colorOnSurface">@color/on_surface</item>
+        <item name="colorSurfaceVariant">@color/surface_variant</item>
+        <item name="colorOnSurfaceVariant">@color/on_surface_variant</item>
+        <item name="colorOutline">@color/outline</item>
+
+        <item name="colorError">@color/error</item>
+        <item name="colorOnError">@color/on_error</item>
+
+        <!-- Route every MaterialButton/TextInputLayout/MaterialCardView through our styles by
+             default, so screens stay on-brand without per-widget style attributes. -->
+        <item name="materialButtonStyle">@style/Widget.TradeCraft.Button.Gradient</item>
+        <item name="textInputStyle">@style/Widget.TradeCraft.TextInputLayout</item>
+        <item name="materialCardViewStyle">@style/Widget.TradeCraft.CardView</item>
     </style>
 
     <style name="Theme.TradeCraft" parent="Base.Theme.TradeCraft" />
+
+    <!-- Widget styles -->
+
+    <style name="Widget.TradeCraft.Button.Gradient" parent="Widget.Material3.Button">
+        <item name="android:background">@drawable/bg_gradient_button</item>
+        <item name="backgroundTint">@null</item>
+        <item name="android:insetTop">0dp</item>
+        <item name="android:insetBottom">0dp</item>
+        <item name="android:textColor">@color/on_primary</item>
+        <item name="rippleColor">#33FFFFFF</item>
+    </style>
+
+    <style name="Widget.TradeCraft.Button.Secondary" parent="Widget.Material3.Button.OutlinedButton">
+        <item name="cornerRadius">@dimen/corner_radius_medium</item>
+        <item name="strokeColor">?attr/colorSecondary</item>
+        <item name="android:textColor">?attr/colorSecondary</item>
+        <item name="iconTint">?attr/colorSecondary</item>
+    </style>
+
+    <style name="Widget.TradeCraft.TextInputLayout" parent="Widget.Material3.TextInputLayout.FilledBox">
+        <item name="boxBackgroundMode">filled</item>
+        <item name="boxBackgroundColor">@color/surface_variant</item>
+        <item name="boxCornerRadiusTopStart">@dimen/corner_radius_medium</item>
+        <item name="boxCornerRadiusTopEnd">@dimen/corner_radius_medium</item>
+        <item name="boxCornerRadiusBottomStart">@dimen/corner_radius_medium</item>
+        <item name="boxCornerRadiusBottomEnd">@dimen/corner_radius_medium</item>
+        <item name="boxStrokeWidth">0dp</item>
+        <item name="boxStrokeWidthFocused">1dp</item>
+        <item name="boxStrokeColor">@color/text_input_stroke</item>
+        <item name="hintEnabled">false</item>
+        <item name="android:textColorHint">?attr/colorOnSurfaceVariant</item>
+        <item name="startIconTint">?attr/colorOnSurfaceVariant</item>
+        <item name="endIconTint">?attr/colorOnSurfaceVariant</item>
+    </style>
+
+    <style name="Widget.TradeCraft.CardView" parent="Widget.Material3.CardView.Elevated">
+        <item name="cardCornerRadius">@dimen/corner_radius_large</item>
+        <item name="cardElevation">@dimen/elevation_card</item>
+        <item name="cardBackgroundColor">?attr/colorSurface</item>
+    </style>
+
+    <!-- Text appearances -->
+
+    <style name="TextAppearance.TradeCraft.AppName" parent="TextAppearance.Material3.HeadlineMedium">
+        <item name="android:textColor">?attr/colorOnPrimary</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:letterSpacing">0.02</item>
+    </style>
+
+    <style name="TextAppearance.TradeCraft.AuthHeading" parent="TextAppearance.Material3.HeadlineSmall">
+        <item name="android:textColor">?attr/colorOnBackground</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="TextAppearance.TradeCraft.AuthSubtitle" parent="TextAppearance.Material3.BodyMedium">
+        <item name="android:textColor">?attr/colorOnSurfaceVariant</item>
+    </style>
+
+    <style name="TextAppearance.TradeCraft.FieldLabel" parent="TextAppearance.Material3.LabelMedium">
+        <item name="android:textColor">?attr/colorOnSurfaceVariant</item>
+    </style>
 </resources>

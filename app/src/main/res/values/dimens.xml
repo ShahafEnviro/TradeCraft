@@ -6,4 +6,12 @@
     <dimen name="spacing_large">24dp</dimen>
     <dimen name="spacing_xlarge">32dp</dimen>
     <dimen name="card_max_width">420dp</dimen>
+    <dimen name="corner_radius_medium">12dp</dimen>
+    <dimen name="corner_radius_large">20dp</dimen>
+    <dimen name="elevation_card">4dp</dimen>
+    <dimen name="hero_height">200dp</dimen>
+    <dimen name="main_header_height">120dp</dimen>
+    <dimen name="sparkle_icon_size">20dp</dimen>
+    <dimen name="brand_divider_width">32dp</dimen>
+    <dimen name="hairline">1dp</dimen>
 </resources>

@@ -3,10 +3,29 @@
 
     <string name="hint_email">Email</string>
     <string name="hint_password">Password</string>
-    <string name="action_login">Login</string>
-    <string name="action_signup">Sign Up</string>
+    <string name="hint_confirm_password">Confirm Password</string>
+    <string name="placeholder_email">you@example.com</string>
+    <string name="placeholder_password">Enter your password</string>
+    <string name="placeholder_confirm_password">Re-enter your password</string>
+    <string name="action_login">Log In</string>
+    <string name="action_signup">Create Account</string>
     <string name="action_logout">Logout</string>
     <string name="error_empty_fields">Please enter both email and password.</string>
+    <string name="error_password_mismatch">Passwords do not match.</string>
     <string name="welcome_message">Welcome, %1$s</string>
     <string name="balance_label">Current Balance</string>
+
+    <string name="heading_sign_in">Log in to your account</string>
+    <string name="subtitle_sign_in">Enter your credentials to access your portfolio.</string>
+    <string name="heading_sign_up">Create your account</string>
+    <string name="subtitle_sign_up">Start trading with $100,000 in virtual cash.</string>
+
+    <string name="footer_sign_in_prefix">Don\'t have an account? </string>
+    <string name="footer_sign_in_action">Sign Up</string>
+    <string name="footer_sign_up_prefix">Already have an account? </string>
+    <string name="footer_sign_up_action">Sign in</string>
+
+    <string name="cd_app_logo">TradeCraft logo</string>
+    <string name="cd_mail_icon">Email icon</string>
+    <string name="cd_lock_icon">Password icon</string>
 </resources>
