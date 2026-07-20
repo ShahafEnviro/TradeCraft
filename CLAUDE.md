@@ -48,13 +48,18 @@ Optimize for **speed and simplicity**, not production hardening. Flag academic s
 
 ## Current status
 - **Phase 1 (auth):** ✅ done, merged to `main`.
-- **Phase 2 (market data):** 🚧 implemented in the working tree on `feature/market-data`,
-  **uncommitted**. Files present: `network/`, `StockRepository`, `MarketViewModel`,
-  `MarketFragment`, `PortfolioFragment` (placeholder), `StockAdapter`, models
+- **Phase 2 (market data):** ✅ committed (8 incremental commits) and pushed to
+  `origin/feature/market-data`. **Not merged into `main`, no PR opened yet.** Adds
+  `network/` (`FinnhubApi`, `RetrofitClient`), `StockRepository`, `MarketViewModel`,
+  `MarketFragment` + `StockAdapter`, `PortfolioFragment` (placeholder), models
   (`QuoteResponse`, `CompanyProfile`, `Stock`), layouts, `menu/`. `MainActivity` converted to
   a bottom-nav shell (Market + Portfolio).
-  - **Next:** review these files, split into the planned incremental commits, verify live
-    prices render, then PR into `main`.
+  - **Next:** paste a real key into `local.properties` (`FINNHUB_API_KEY=...`), run the app,
+    and verify live prices actually render on the Market tab before opening a PR into `main`.
+  - **Known open issue:** sign-up occasionally spins forever on some networks/emulators
+    (Firebase Auth account gets created, but the client never sees the Firestore profile
+    write acknowledged). Root cause not yet confirmed — needs live logcat from a connected
+    device to diagnose. `UserRepository`/`AuthViewModel` were deliberately left untouched.
 - **Phases 3–5:** not started. See PLAN.md.
 
 ## Build / run notes
