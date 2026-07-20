@@ -28,4 +28,7 @@
     <string name="cd_app_logo">TradeCraft logo</string>
     <string name="cd_mail_icon">Email icon</string>
     <string name="cd_lock_icon">Password icon</string>
+
+    <string name="cd_stock_logo">Company logo</string>
+    <string name="market_empty_state">No market data yet.</string>
 </resources>
