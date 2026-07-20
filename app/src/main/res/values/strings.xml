@@ -31,4 +31,5 @@
 
     <string name="cd_stock_logo">Company logo</string>
     <string name="market_empty_state">No market data yet.</string>
+    <string name="portfolio_message">Your portfolio — trading arrives in the next phase.</string>
 </resources>
