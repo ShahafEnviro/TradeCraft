@@ -20,12 +20,18 @@
     <string name="heading_sign_up">Create your account</string>
     <string name="subtitle_sign_up">Start trading with $100,000 in virtual cash.</string>
 
-    <string name="footer_sign_in_prefix">Don\'t have an account? </string>
+    <string name="footer_sign_in_prefix">"Don\'t have an account? "</string>
     <string name="footer_sign_in_action">Sign Up</string>
-    <string name="footer_sign_up_prefix">Already have an account? </string>
-    <string name="footer_sign_up_action">Sign in</string>
+    <string name="footer_sign_up_prefix">"Already have an account? "</string>
+    <string name="footer_sign_up_action">Sign In</string>
 
     <string name="cd_app_logo">TradeCraft logo</string>
     <string name="cd_mail_icon">Email icon</string>
     <string name="cd_lock_icon">Password icon</string>
+
+    <string name="nav_market">Market</string>
+    <string name="nav_portfolio">Portfolio</string>
+    <string name="cd_stock_logo">Company logo</string>
+    <string name="market_empty_state">No market data yet.</string>
+    <string name="portfolio_message">Your portfolio — trading arrives in the next phase.</string>
 </resources>

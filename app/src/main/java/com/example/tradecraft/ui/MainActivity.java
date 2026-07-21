@@ -2,24 +2,18 @@ package com.example.tradecraft.ui;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.View;
-import android.widget.Button;
-import android.widget.ProgressBar;
-import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.example.tradecraft.R;
 import com.example.tradecraft.viewmodel.AuthViewModel;
+import com.google.android.material.appbar.MaterialToolbar;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 
-import java.text.NumberFormat;
-import java.util.Locale;
-
-/** Placeholder home screen: shows the logged-in user's email and starting balance. */
+/** App shell: a toolbar (with logout) and a bottom nav hosting the Market and Portfolio tabs. */
 public class MainActivity extends AppCompatActivity {
-
-    private final NumberFormat currencyFormat = NumberFormat.getCurrencyInstance(Locale.US);
 
     private AuthViewModel viewModel;
 
@@ -28,27 +22,22 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        TextView welcomeText = findViewById(R.id.welcome_text);
-        TextView balanceText = findViewById(R.id.balance_text);
-        ProgressBar progressBar = findViewById(R.id.progress_bar);
-        Button logoutButton = findViewById(R.id.logout_button);
-
         viewModel = new ViewModelProvider(this).get(AuthViewModel.class);
 
-        viewModel.getLoading().observe(this, isLoading ->
-                progressBar.setVisibility(Boolean.TRUE.equals(isLoading) ? View.VISIBLE : View.GONE));
+        MaterialToolbar toolbar = findViewById(R.id.main_toolbar);
+        BottomNavigationView bottomNav = findViewById(R.id.main_bottom_nav);
 
-        viewModel.getUser().observe(this, user -> {
-            if (user != null) {
-                welcomeText.setText(getString(R.string.welcome_message, user.getEmail()));
-                balanceText.setText(currencyFormat.format(user.getBalance()));
+        toolbar.setOnMenuItemClickListener(item -> {
+            if (item.getItemId() == R.id.action_logout) {
+                viewModel.logout();
+                return true;
             }
+            return false;
         });
 
-        viewModel.getError().observe(this, message -> {
-            if (message != null) {
-                welcomeText.setText(message);
-            }
+        bottomNav.setOnItemSelectedListener(item -> {
+            showFragment(item.getItemId() == R.id.nav_portfolio ? new PortfolioFragment() : new MarketFragment());
+            return true;
         });
 
         viewModel.getLoggedOut().observe(this, loggedOut -> {
@@ -57,9 +46,16 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        logoutButton.setOnClickListener(v -> viewModel.logout());
+        if (savedInstanceState == null) {
+            bottomNav.setSelectedItemId(R.id.nav_market);
+        }
+    }
 
-        viewModel.loadCurrentUser();
+    private void showFragment(Fragment fragment) {
+        getSupportFragmentManager()
+                .beginTransaction()
+                .replace(R.id.main_fragment_container, fragment)
+                .commit();
     }
 
     private void goToLogin() {

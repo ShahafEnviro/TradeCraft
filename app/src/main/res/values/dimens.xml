@@ -14,4 +14,5 @@
     <dimen name="sparkle_icon_size">20dp</dimen>
     <dimen name="brand_divider_width">32dp</dimen>
     <dimen name="hairline">1dp</dimen>
+    <dimen name="stock_logo_size">40dp</dimen>
 </resources>
