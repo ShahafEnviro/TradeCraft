@@ -48,22 +48,24 @@ Optimize for **speed and simplicity**, not production hardening. Flag academic s
 
 ## Current status
 - **Phase 1 (auth):** ✅ done, merged to `main`.
-- **Phase 2 (market data):** ✅ committed (8 incremental commits) and pushed to
-  `origin/feature/market-data`. **Not merged into `main`, no PR opened yet.** Adds
+- **Phase 2 (market data):** ✅ merged into `main` via PR #2. Adds
   `network/` (`FinnhubApi`, `RetrofitClient`), `StockRepository`, `MarketViewModel`,
   `MarketFragment` + `StockAdapter`, `PortfolioFragment` (placeholder), models
   (`QuoteResponse`, `CompanyProfile`, `Stock`), layouts, `menu/`. `MainActivity` converted to
-  a bottom-nav shell (Market + Portfolio).
-  - **Next:** paste a real key into `local.properties` (`FINNHUB_API_KEY=...`), run the app,
-    and verify live prices actually render on the Market tab before opening a PR into `main`.
-  - **Known open issue:** sign-up occasionally spins forever on some networks/emulators
-    (Firebase Auth account gets created, but the client never sees the Firestore profile
-    write acknowledged). Root cause not yet confirmed — needs live logcat from a connected
-    device to diagnose. `UserRepository`/`AuthViewModel` were deliberately left untouched.
+  a bottom-nav shell (Market + Portfolio). **Live prices verified rendering** on the Market
+  tab (Finnhub key is set in `local.properties` as `FINNHUB_API_KEY`, surfaced via
+  `BuildConfig`; the file is gitignored).
+  - **Resolved (was "sign-up spins forever"):** root cause was that the **Cloud Firestore
+    database had not been created** in the Firebase console, so the profile `.set()` write
+    was never acknowledged and the UI hung. Fixed by creating the Firestore database — no code
+    change needed; `UserRepository`/`AuthViewModel` are correct as-is.
 - **Phases 3–5:** not started. See PLAN.md.
 
 ## Build / run notes
 - Requires `app/google-services.json` (Firebase) — not committed.
+- **Enable Email/Password auth AND create the Cloud Firestore database** in the Firebase
+  console. If the Firestore database doesn't exist, profile writes are never acknowledged and
+  sign-up hangs — this was the cause of the earlier "sign-up spins forever" symptom.
 - Finnhub API key goes in `local.properties` as `FINNHUB_API_KEY=...` (gitignored), surfaced
   via `BuildConfig.FINNHUB_API_KEY` (needs `buildFeatures { buildConfig = true }`).
 - After editing `gradle/libs.versions.toml`, run a Gradle sync — unresolved `libs.*`
