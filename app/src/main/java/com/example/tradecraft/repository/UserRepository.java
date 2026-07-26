@@ -1,5 +1,6 @@
 package com.example.tradecraft.repository;
 
+import com.example.tradecraft.model.Holding;
 import com.example.tradecraft.model.User;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException;
@@ -8,8 +9,11 @@ import com.google.firebase.auth.FirebaseAuthUserCollisionException;
 import com.google.firebase.auth.FirebaseAuthWeakPasswordException;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -19,6 +23,7 @@ import java.util.Map;
 public class UserRepository {
 
     private static final String USERS_COLLECTION = "users";
+    private static final String PORTFOLIO_SUBCOLLECTION = "portfolio";
     private static final String FIELD_EMAIL = "email";
     private static final String FIELD_BALANCE = "balance";
     private static final double STARTING_BALANCE = 100000.0;
@@ -114,6 +119,42 @@ public class UserRepository {
                     callback.onSuccess(new User(storedEmail, balance != null ? balance : 0.0));
                 })
                 .addOnFailureListener(e -> callback.onError("Could not load your profile. Please try again."));
+    }
+
+    /** Reads every holding in the current user's portfolio subcollection. An empty list is a valid result. */
+    public void getPortfolio(RepositoryCallback<List<Holding>> callback) {
+        FirebaseUser firebaseUser = firebaseAuth.getCurrentUser();
+        if (firebaseUser == null) {
+            callback.onError("No authenticated user.");
+            return;
+        }
+        firestore.collection(USERS_COLLECTION).document(firebaseUser.getUid())
+                .collection(PORTFOLIO_SUBCOLLECTION)
+                .get()
+                .addOnSuccessListener(snapshot -> {
+                    List<Holding> holdings = new ArrayList<>();
+                    for (QueryDocumentSnapshot doc : snapshot) {
+                        Holding holding = doc.toObject(Holding.class);
+                        holdings.add(holding);
+                    }
+                    callback.onSuccess(holdings);
+                })
+                .addOnFailureListener(e -> callback.onError("Could not load your portfolio. Please try again."));
+    }
+
+    /** Reads a single holding by symbol; passes null to onSuccess if the user doesn't hold that symbol. */
+    public void getHolding(String symbol, RepositoryCallback<Holding> callback) {
+        FirebaseUser firebaseUser = firebaseAuth.getCurrentUser();
+        if (firebaseUser == null) {
+            callback.onError("No authenticated user.");
+            return;
+        }
+        firestore.collection(USERS_COLLECTION).document(firebaseUser.getUid())
+                .collection(PORTFOLIO_SUBCOLLECTION).document(symbol)
+                .get()
+                .addOnSuccessListener(snapshot ->
+                        callback.onSuccess(snapshot.exists() ? snapshot.toObject(Holding.class) : null))
+                .addOnFailureListener(e -> callback.onError("Could not load holding. Please try again."));
     }
 
     /** Translates Firebase's exception types into messages fit for display in the UI. */
