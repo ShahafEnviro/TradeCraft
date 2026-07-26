@@ -136,8 +136,8 @@ match /users/{userId} {
 | Phase | Scope | Branch | Status |
 |---|---|---|---|
 | 1 | Firebase auth + MVVM setup + dark auth UI (2 fragments) | `feature/auth-ui-redesign` | ✅ Done, merged to `main` |
-| 2 | Retrofit + Finnhub live market data + bottom-nav shell | `feature/market-data` | 🚧 Implemented in working tree, pending review/commit |
-| 3 | Firestore portfolio schema + repository + security rules | TBD | ⬜ Not started |
+| 2 | Retrofit + Finnhub live market data + bottom-nav shell | `feature/market-data` | ✅ Done, merged to `main` |
+| 3 | Firestore portfolio schema + repository + security rules | `feature/portfolio` | ✅ Implemented, committed, tested locally — pending PR/merge |
 | 4 | Broker logic (buy/sell via Firestore transaction) + Trade dialog | TBD | ⬜ Not started |
 | 5 | UI polish, P/L, edge cases, report | TBD | ⬜ Not started |
 
@@ -150,10 +150,17 @@ match /users/{userId} {
 - **Next action:** review the uncommitted files, split into the planned incremental commits,
   verify live prices render, then open a PR into `main`.
 
-### Phase 3 detail (next)
-- Extend `UserRepository`: `getPortfolio()`, `getHolding(symbol)`, holding model.
-- Wire `PortfolioFragment` to real holdings with live valuation.
-- Publish Firestore Security Rules (section 4).
+### Phase 3 detail (done)
+- Extended `UserRepository`: `getPortfolio()`, `getHolding(symbol)`, `Holding` model. ✅
+- `PortfolioViewModel` merges holdings with live quotes (`PortfolioPosition`); reuses the
+  fan-out pattern from `MarketViewModel`. ✅
+- `PortfolioFragment`/`PortfolioAdapter` wired to real holdings: summary card (total value,
+  cash, holdings value, unrealized P/L) + `RecyclerView` of holding rows. ✅
+- Firestore Security Rules published (section 4), scoping `portfolio/{ticker}` to the owning
+  user. ✅
+- Read-only by design — no buy/sell UI yet (that's Phase 4), so holdings must currently be
+  seeded manually in the Firestore console for testing.
+- **Next action:** open a PR into `main` (do not merge without review, per Phase 2 pattern).
 
 ### Phase 4 detail
 - `BrokerViewModel`/`TradeService` + `TradeDialog`; buy/sell as atomic Firestore transactions.
