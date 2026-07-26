@@ -12,8 +12,6 @@
     <string name="action_logout">Logout</string>
     <string name="error_empty_fields">Please enter both email and password.</string>
     <string name="error_password_mismatch">Passwords do not match.</string>
-    <string name="welcome_message">Welcome, %1$s</string>
-    <string name="balance_label">Current Balance</string>
 
     <string name="heading_sign_in">Log in to your account</string>
     <string name="subtitle_sign_in">Enter your credentials to access your portfolio.</string>
@@ -33,5 +31,11 @@
     <string name="nav_portfolio">Portfolio</string>
     <string name="cd_stock_logo">Company logo</string>
     <string name="market_empty_state">No market data yet.</string>
-    <string name="portfolio_message">Your portfolio — trading arrives in the next phase.</string>
+
+    <string name="label_total_value">Total Portfolio Value</string>
+    <string name="label_cash_balance">Cash Balance</string>
+    <string name="label_holdings_value">Holdings Value</string>
+    <string name="label_unrealized_pl">Unrealized P/L</string>
+    <string name="portfolio_empty_state">No holdings yet — buy stocks from the Market tab.</string>
+    <string name="holding_quantity_format">%1$d @ %2$s avg</string>
 </resources>
