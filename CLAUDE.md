@@ -55,11 +55,23 @@ Optimize for **speed and simplicity**, not production hardening. Flag academic s
   a bottom-nav shell (Market + Portfolio). **Live prices verified rendering** on the Market
   tab (Finnhub key is set in `local.properties` as `FINNHUB_API_KEY`, surfaced via
   `BuildConfig`; the file is gitignored).
-  - **Resolved (was "sign-up spins forever"):** root cause was that the **Cloud Firestore
-    database had not been created** in the Firebase console, so the profile `.set()` write
-    was never acknowledged and the UI hung. Fixed by creating the Firestore database — no code
-    change needed; `UserRepository`/`AuthViewModel` are correct as-is.
-- **Phases 3–5:** not started. See PLAN.md.
+  - **Resolved (was "sign-up spins forever"):** two independent Firebase Console
+    misconfigurations, no code changes needed. (1) The **Cloud Firestore database had not
+    been created**, so the profile `.set()` write was never acknowledged and the UI hung
+    indefinitely. (2) After creating it, writes failed fast with `PERMISSION_DENIED` because
+    the published Security Rules were the production-mode default (`allow read, write: if
+    false;`). Fixed by creating the Firestore database and publishing rules scoping
+    `users/{userId}` to `request.auth.uid == userId`. Confirmed resolved via live device +
+    logcat (clean auth-success → `MainActivity` launch, no errors).
+- **Phase 3 (portfolio):** ✅ implemented and committed on `feature/portfolio` (5 commits:
+  `Holding`/`PortfolioPosition` models, `UserRepository` portfolio reads,
+  `PortfolioViewModel`, dashboard UI (`PortfolioFragment`/`PortfolioAdapter`/
+  `item_holding.xml`), `firestore.rules`). Tested locally on a real device; Security Rules
+  published to the Firebase console (adds a `portfolio/{ticker}` nested rule under
+  `users/{userId}`, same ownership check). Read-only by design — no buy/sell UI yet (Phase 4),
+  so holdings are seeded manually in the Firestore console. **Not yet merged to `main`** —
+  next step is opening a PR.
+- **Phases 4–5:** not started. See PLAN.md.
 
 ## Build / run notes
 - Requires `app/google-services.json` (Firebase) — not committed.
