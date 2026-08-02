@@ -63,15 +63,31 @@ Optimize for **speed and simplicity**, not production hardening. Flag academic s
     false;`). Fixed by creating the Firestore database and publishing rules scoping
     `users/{userId}` to `request.auth.uid == userId`. Confirmed resolved via live device +
     logcat (clean auth-success → `MainActivity` launch, no errors).
-- **Phase 3 (portfolio):** ✅ implemented and committed on `feature/portfolio` (5 commits:
-  `Holding`/`PortfolioPosition` models, `UserRepository` portfolio reads,
-  `PortfolioViewModel`, dashboard UI (`PortfolioFragment`/`PortfolioAdapter`/
-  `item_holding.xml`), `firestore.rules`). Tested locally on a real device; Security Rules
-  published to the Firebase console (adds a `portfolio/{ticker}` nested rule under
-  `users/{userId}`, same ownership check). Read-only by design — no buy/sell UI yet (Phase 4),
-  so holdings are seeded manually in the Firestore console. **Not yet merged to `main`** —
-  next step is opening a PR.
-- **Phases 4–5:** not started. See PLAN.md.
+- **Phase 3 (portfolio):** ✅ merged to `main`. Adds `Holding`/`PortfolioPosition` models,
+  `UserRepository` portfolio reads, `PortfolioViewModel`, dashboard UI
+  (`PortfolioFragment`/`PortfolioAdapter`/`item_holding.xml`), `firestore.rules`. Tested on a
+  real device; Security Rules published to the Firebase console (adds a `portfolio/{ticker}`
+  nested rule under `users/{userId}`, same ownership check). Read-only by design — no buy/sell
+  UI (that's Phase 4), so holdings were seeded manually in the Firestore console during Phase 3
+  testing.
+- **Phase 4 (broker / trade):** 🚧 implemented on `feature/broker` (branched off
+  `feature/portfolio`), 4 conventional commits, pushed to origin — **not merged**. Adds
+  buy/sell Firestore transactions to `UserRepository` (`executeBuy`/`executeSell`, single
+  `runTransaction`, all-reads-before-writes, weighted-average cost basis), `TradeViewModel`
+  (orchestrates live price + cash + owned qty, re-fetches a fresh price before executing),
+  `TradeDialog` + `dialog_trade.xml`, and row-tap entry points in `MarketFragment`/
+  `PortfolioFragment` that refresh in place via the Fragment Result API. Compiles clean.
+  **Under test on a physical device.**
+  - **Open issue (under investigation):** buys can fail with "Insufficient funds." even when
+    the user should have cash. Root cause is a missing/mistyped `users/{uid}` profile doc:
+    `readDouble(userSnapshot, "balance")` silently treats an absent doc, absent `balance`
+    field, or non-numeric `balance` as `0.0`, so the `cost > balance` guard always trips.
+    Happens for accounts created via the Firebase Auth console (no profile doc ever written)
+    or when only `portfolio/{ticker}` docs were seeded without a parent `balance`. Fix: ensure
+    the profile doc exists with a numeric `balance` (sign up in-app, not via console), and
+    optionally harden `executeBuy`/`executeSell` to throw a clear "account not set up" error
+    when `!userSnapshot.exists()` instead of misreporting insufficient funds.
+- **Phase 5:** not started. See PLAN.md.
 
 ## Build / run notes
 - Requires `app/google-services.json` (Firebase) — not committed.
