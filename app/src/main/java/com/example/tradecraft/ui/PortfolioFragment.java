@@ -63,6 +63,14 @@ public class PortfolioFragment extends Fragment {
         recyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
         recyclerView.setAdapter(adapter);
 
+        adapter.setOnPositionClickListener(position ->
+                TradeDialog.newInstance(position.getSymbol(), position.getCompanyName())
+                        .show(getParentFragmentManager(), "trade"));
+
+        // Refresh holdings after a completed trade so quantities and cash update in place.
+        getParentFragmentManager().setFragmentResultListener(TradeDialog.RESULT_KEY,
+                getViewLifecycleOwner(), (requestKey, result) -> viewModel.loadPortfolio());
+
         observeViewModel();
 
         if (savedInstanceState == null) {

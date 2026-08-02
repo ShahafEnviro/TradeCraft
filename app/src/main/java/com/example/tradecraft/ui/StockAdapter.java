@@ -23,8 +23,18 @@ import java.util.Locale;
 /** Binds the live watchlist to the Market screen's RecyclerView. */
 public class StockAdapter extends RecyclerView.Adapter<StockAdapter.StockViewHolder> {
 
+    /** Notified when a stock row is tapped, so the host can open the trade dialog. */
+    public interface OnStockClickListener {
+        void onStockClick(Stock stock);
+    }
+
     private final NumberFormat currencyFormat = NumberFormat.getCurrencyInstance(Locale.US);
     private final List<Stock> stocks = new ArrayList<>();
+    private OnStockClickListener clickListener;
+
+    public void setOnStockClickListener(OnStockClickListener listener) {
+        this.clickListener = listener;
+    }
 
     public void submitList(List<Stock> newStocks) {
         DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(new StockDiffCallback(stocks, newStocks));
@@ -42,7 +52,13 @@ public class StockAdapter extends RecyclerView.Adapter<StockAdapter.StockViewHol
 
     @Override
     public void onBindViewHolder(@NonNull StockViewHolder holder, int position) {
-        holder.bind(stocks.get(position), currencyFormat);
+        Stock stock = stocks.get(position);
+        holder.bind(stock, currencyFormat);
+        holder.itemView.setOnClickListener(v -> {
+            if (clickListener != null) {
+                clickListener.onStockClick(stock);
+            }
+        });
     }
 
     @Override

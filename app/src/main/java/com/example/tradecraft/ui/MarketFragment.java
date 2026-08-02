@@ -49,6 +49,14 @@ public class MarketFragment extends Fragment {
         recyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
         recyclerView.setAdapter(adapter);
 
+        adapter.setOnStockClickListener(stock ->
+                TradeDialog.newInstance(stock.getSymbol(), stock.getCompanyName())
+                        .show(getParentFragmentManager(), "trade"));
+
+        // Refresh live quotes after a completed trade so cash/price changes are reflected in place.
+        getParentFragmentManager().setFragmentResultListener(TradeDialog.RESULT_KEY,
+                getViewLifecycleOwner(), (requestKey, result) -> viewModel.loadMarket());
+
         swipeRefresh.setOnRefreshListener(() -> viewModel.loadMarket());
 
         observeViewModel();
