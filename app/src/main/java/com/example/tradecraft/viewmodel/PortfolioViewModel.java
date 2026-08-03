@@ -135,7 +135,7 @@ public class PortfolioViewModel extends ViewModel {
     private void finishLoading(List<PortfolioPosition> positions, List<Holding> holdings, double balance, int failureCount) {
         loadingLiveData.setValue(false);
 
-        if (positions.isEmpty() && failureCount > 0) {
+        if (failureCount > 0) {
             errorLiveData.setValue("Could not load live prices for your holdings. Please try again.");
             return;
         }

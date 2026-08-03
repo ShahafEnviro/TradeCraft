@@ -6,6 +6,7 @@ import com.example.tradecraft.model.Stock;
 import com.example.tradecraft.network.FinnhubApi;
 import com.example.tradecraft.network.RetrofitClient;
 
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -40,6 +41,19 @@ public class StockRepository {
     private static StockRepository instance;
 
     private final FinnhubApi api;
+    
+    private final Map<String, CachedStock> cache = new HashMap<>();
+    private static final long CACHE_EXPIRY_MS = 15000; // 15 seconds
+
+    private static class CachedStock {
+        final Stock stock;
+        final long fetchTimeMs;
+
+        CachedStock(Stock stock, long fetchTimeMs) {
+            this.stock = stock;
+            this.fetchTimeMs = fetchTimeMs;
+        }
+    }
 
     private StockRepository() {
         api = RetrofitClient.getInstance().getApi();
@@ -60,20 +74,37 @@ public class StockRepository {
     /** Fetches a live quote for one symbol and maps it onto the app-level Stock model. */
     public void getQuote(String symbol, RepositoryCallback<Stock> callback) {
         String companyName = MARKET_TICKERS.getOrDefault(symbol, symbol);
+        
+        CachedStock cached = cache.get(symbol);
+        if (cached != null && System.currentTimeMillis() - cached.fetchTimeMs < CACHE_EXPIRY_MS) {
+            callback.onSuccess(cached.stock);
+            return;
+        }
+
         api.getQuote(symbol, BuildConfig.FINNHUB_API_KEY).enqueue(new Callback<QuoteResponse>() {
             @Override
             public void onResponse(Call<QuoteResponse> call, Response<QuoteResponse> response) {
                 if (!response.isSuccessful() || response.body() == null) {
-                    callback.onError("Could not load a quote for " + symbol + ".");
+                    if (cached != null) {
+                        callback.onSuccess(cached.stock);
+                    } else {
+                        callback.onError("Could not load a quote for " + symbol + ".");
+                    }
                     return;
                 }
                 QuoteResponse quote = response.body();
-                callback.onSuccess(new Stock(symbol, companyName, null, quote.getCurrent(), quote.getPreviousClose()));
+                Stock stock = new Stock(symbol, companyName, null, quote.getCurrent(), quote.getPreviousClose());
+                cache.put(symbol, new CachedStock(stock, System.currentTimeMillis()));
+                callback.onSuccess(stock);
             }
 
             @Override
             public void onFailure(Call<QuoteResponse> call, Throwable t) {
-                callback.onError("Network error loading " + symbol + ". Please try again.");
+                if (cached != null) {
+                    callback.onSuccess(cached.stock);
+                } else {
+                    callback.onError("Network error loading " + symbol + ". Please try again.");
+                }
             }
         });
     }

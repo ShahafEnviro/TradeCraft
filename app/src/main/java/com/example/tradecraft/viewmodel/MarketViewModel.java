@@ -63,7 +63,7 @@ public class MarketViewModel extends ViewModel {
                 private void onOneFinished() {
                     if (pending.decrementAndGet() == 0) {
                         loadingLiveData.setValue(false);
-                        if (results.isEmpty() && failures.get() > 0) {
+                        if (failures.get() > 0) {
                             errorLiveData.setValue("Could not load market data. Please try again.");
                         } else {
                             sortBySymbolOrder(results, symbols);
