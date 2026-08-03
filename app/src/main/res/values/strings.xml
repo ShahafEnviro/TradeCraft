@@ -31,6 +31,7 @@
     <string name="nav_portfolio">Portfolio</string>
     <string name="cd_stock_logo">Company logo</string>
     <string name="market_empty_state">No market data yet.</string>
+    <string name="hint_search">Search stocks</string>
 
     <string name="label_total_value">Total Portfolio Value</string>
     <string name="label_cash_balance">Cash Balance</string>

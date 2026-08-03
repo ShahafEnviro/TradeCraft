@@ -35,3 +35,6 @@ google-services.json
 
 # Text files
 .txt
+
+# Cleanup cruft
+app/release/

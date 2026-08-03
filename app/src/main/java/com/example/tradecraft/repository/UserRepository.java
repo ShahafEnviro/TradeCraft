@@ -180,6 +180,10 @@ public class UserRepository {
         firestore.runTransaction(transaction -> {
             // Firestore requires every read before any write inside a transaction.
             DocumentSnapshot userSnapshot = transaction.get(userRef);
+            if (!userSnapshot.exists()) {
+                throw new FirebaseFirestoreException("Account not set up. Please sign out and create a new account.",
+                        FirebaseFirestoreException.Code.ABORTED);
+            }
             DocumentSnapshot holdingSnapshot = transaction.get(holdingRef);
 
             double balance = readDouble(userSnapshot, FIELD_BALANCE);
@@ -231,6 +235,10 @@ public class UserRepository {
         firestore.runTransaction(transaction -> {
             // Firestore requires every read before any write inside a transaction.
             DocumentSnapshot userSnapshot = transaction.get(userRef);
+            if (!userSnapshot.exists()) {
+                throw new FirebaseFirestoreException("Account not set up. Please sign out and create a new account.",
+                        FirebaseFirestoreException.Code.ABORTED);
+            }
             DocumentSnapshot holdingSnapshot = transaction.get(holdingRef);
 
             long ownedQuantity = holdingSnapshot.exists() ? readLong(holdingSnapshot, FIELD_QUANTITY) : 0;
