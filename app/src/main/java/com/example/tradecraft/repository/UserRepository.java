@@ -8,7 +8,10 @@ import com.google.firebase.auth.FirebaseAuthInvalidUserException;
 import com.google.firebase.auth.FirebaseAuthUserCollisionException;
 import com.google.firebase.auth.FirebaseAuthWeakPasswordException;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import java.util.ArrayList;
@@ -26,6 +29,9 @@ public class UserRepository {
     private static final String PORTFOLIO_SUBCOLLECTION = "portfolio";
     private static final String FIELD_EMAIL = "email";
     private static final String FIELD_BALANCE = "balance";
+    private static final String FIELD_SYMBOL = "symbol";
+    private static final String FIELD_QUANTITY = "quantity";
+    private static final String FIELD_AVG_BUY_PRICE = "avgBuyPrice";
     private static final double STARTING_BALANCE = 100000.0;
 
     private static UserRepository instance;
@@ -155,6 +161,120 @@ public class UserRepository {
                 .addOnSuccessListener(snapshot ->
                         callback.onSuccess(snapshot.exists() ? snapshot.toObject(Holding.class) : null))
                 .addOnFailureListener(e -> callback.onError("Could not load holding. Please try again."));
+    }
+
+    /**
+     * Buys {@code quantity} shares of {@code symbol} at the given live {@code price} atomically:
+     * deducts the cost from cash and upserts the holding (recomputing the weighted average cost).
+     * Fails with "Insufficient funds." if the cost exceeds the current balance.
+     */
+    public void executeBuy(String symbol, long quantity, double price, RepositoryCallback<Void> callback) {
+        FirebaseUser firebaseUser = firebaseAuth.getCurrentUser();
+        if (firebaseUser == null) {
+            callback.onError("No authenticated user.");
+            return;
+        }
+        DocumentReference userRef = firestore.collection(USERS_COLLECTION).document(firebaseUser.getUid());
+        DocumentReference holdingRef = userRef.collection(PORTFOLIO_SUBCOLLECTION).document(symbol);
+
+        firestore.runTransaction(transaction -> {
+            // Firestore requires every read before any write inside a transaction.
+            DocumentSnapshot userSnapshot = transaction.get(userRef);
+            if (!userSnapshot.exists()) {
+                throw new FirebaseFirestoreException("Account not set up. Please sign out and create a new account.",
+                        FirebaseFirestoreException.Code.ABORTED);
+            }
+            DocumentSnapshot holdingSnapshot = transaction.get(holdingRef);
+
+            double balance = readDouble(userSnapshot, FIELD_BALANCE);
+            double cost = price * quantity;
+            if (cost > balance) {
+                throw new FirebaseFirestoreException("Insufficient funds.",
+                        FirebaseFirestoreException.Code.ABORTED);
+            }
+
+            long newQuantity;
+            double newAvgBuyPrice;
+            if (holdingSnapshot.exists()) {
+                long oldQuantity = readLong(holdingSnapshot, FIELD_QUANTITY);
+                double oldAvg = readDouble(holdingSnapshot, FIELD_AVG_BUY_PRICE);
+                newQuantity = oldQuantity + quantity;
+                newAvgBuyPrice = (oldQuantity * oldAvg + quantity * price) / newQuantity;
+            } else {
+                newQuantity = quantity;
+                newAvgBuyPrice = price;
+            }
+
+            transaction.update(userRef, FIELD_BALANCE, balance - cost);
+
+            Map<String, Object> holding = new HashMap<>();
+            holding.put(FIELD_SYMBOL, symbol);
+            holding.put(FIELD_QUANTITY, newQuantity);
+            holding.put(FIELD_AVG_BUY_PRICE, newAvgBuyPrice);
+            transaction.set(holdingRef, holding);
+            return null;
+        }).addOnSuccessListener(unused -> callback.onSuccess(null))
+                .addOnFailureListener(e -> callback.onError(tradeError(e)));
+    }
+
+    /**
+     * Sells {@code quantity} shares of {@code symbol} at the given live {@code price} atomically:
+     * adds the proceeds to cash and decrements the holding (deleting it at zero). The average cost
+     * basis on any remaining shares is left unchanged (no realized-P/L tracking in the MVP).
+     * Fails with "You don't own enough shares." if the holding is missing or too small.
+     */
+    public void executeSell(String symbol, long quantity, double price, RepositoryCallback<Void> callback) {
+        FirebaseUser firebaseUser = firebaseAuth.getCurrentUser();
+        if (firebaseUser == null) {
+            callback.onError("No authenticated user.");
+            return;
+        }
+        DocumentReference userRef = firestore.collection(USERS_COLLECTION).document(firebaseUser.getUid());
+        DocumentReference holdingRef = userRef.collection(PORTFOLIO_SUBCOLLECTION).document(symbol);
+
+        firestore.runTransaction(transaction -> {
+            // Firestore requires every read before any write inside a transaction.
+            DocumentSnapshot userSnapshot = transaction.get(userRef);
+            if (!userSnapshot.exists()) {
+                throw new FirebaseFirestoreException("Account not set up. Please sign out and create a new account.",
+                        FirebaseFirestoreException.Code.ABORTED);
+            }
+            DocumentSnapshot holdingSnapshot = transaction.get(holdingRef);
+
+            long ownedQuantity = holdingSnapshot.exists() ? readLong(holdingSnapshot, FIELD_QUANTITY) : 0;
+            if (!holdingSnapshot.exists() || quantity > ownedQuantity) {
+                throw new FirebaseFirestoreException("You don't own enough shares.",
+                        FirebaseFirestoreException.Code.ABORTED);
+            }
+
+            double balance = readDouble(userSnapshot, FIELD_BALANCE);
+            double proceeds = price * quantity;
+            long newQuantity = ownedQuantity - quantity;
+
+            transaction.update(userRef, FIELD_BALANCE, balance + proceeds);
+            if (newQuantity == 0) {
+                transaction.delete(holdingRef);
+            } else {
+                transaction.update(holdingRef, FIELD_QUANTITY, newQuantity);
+            }
+            return null;
+        }).addOnSuccessListener(unused -> callback.onSuccess(null))
+                .addOnFailureListener(e -> callback.onError(tradeError(e)));
+    }
+
+    private double readDouble(DocumentSnapshot snapshot, String field) {
+        Double value = snapshot.getDouble(field);
+        return value != null ? value : 0.0;
+    }
+
+    private long readLong(DocumentSnapshot snapshot, String field) {
+        Long value = snapshot.getLong(field);
+        return value != null ? value : 0L;
+    }
+
+    /** Surfaces the thrown transaction message, falling back to a generic line if Firebase gives none. */
+    private String tradeError(Exception e) {
+        return e.getMessage() != null ? e.getMessage() : "Trade failed. Please try again.";
     }
 
     /** Translates Firebase's exception types into messages fit for display in the UI. */

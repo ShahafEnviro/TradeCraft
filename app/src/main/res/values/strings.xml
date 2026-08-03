@@ -31,6 +31,7 @@
     <string name="nav_portfolio">Portfolio</string>
     <string name="cd_stock_logo">Company logo</string>
     <string name="market_empty_state">No market data yet.</string>
+    <string name="hint_search">Search stocks</string>
 
     <string name="label_total_value">Total Portfolio Value</string>
     <string name="label_cash_balance">Cash Balance</string>
@@ -38,4 +39,13 @@
     <string name="label_unrealized_pl">Unrealized P/L</string>
     <string name="portfolio_empty_state">No holdings yet — buy stocks from the Market tab.</string>
     <string name="holding_quantity_format">%1$d @ %2$s avg</string>
+
+    <string name="label_current_price">Current price</string>
+    <string name="label_cash_available">Cash available</string>
+    <string name="trade_owned_format">You own: %1$d shares</string>
+    <string name="trade_price_placeholder">—</string>
+    <string name="hint_quantity">Quantity</string>
+    <string name="trade_estimate_format">Estimated total: %1$s</string>
+    <string name="action_buy">Buy</string>
+    <string name="action_sell">Sell</string>
 </resources>

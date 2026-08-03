@@ -63,15 +63,18 @@ Optimize for **speed and simplicity**, not production hardening. Flag academic s
     false;`). Fixed by creating the Firestore database and publishing rules scoping
     `users/{userId}` to `request.auth.uid == userId`. Confirmed resolved via live device +
     logcat (clean auth-success → `MainActivity` launch, no errors).
-- **Phase 3 (portfolio):** ✅ implemented and committed on `feature/portfolio` (5 commits:
-  `Holding`/`PortfolioPosition` models, `UserRepository` portfolio reads,
-  `PortfolioViewModel`, dashboard UI (`PortfolioFragment`/`PortfolioAdapter`/
-  `item_holding.xml`), `firestore.rules`). Tested locally on a real device; Security Rules
-  published to the Firebase console (adds a `portfolio/{ticker}` nested rule under
-  `users/{userId}`, same ownership check). Read-only by design — no buy/sell UI yet (Phase 4),
-  so holdings are seeded manually in the Firestore console. **Not yet merged to `main`** —
-  next step is opening a PR.
-- **Phases 4–5:** not started. See PLAN.md.
+- **Phase 3 (portfolio):** ✅ merged to `main`. Adds `Holding`/`PortfolioPosition` models,
+  `UserRepository` portfolio reads, `PortfolioViewModel`, dashboard UI
+  (`PortfolioFragment`/`PortfolioAdapter`/`item_holding.xml`), `firestore.rules`. Tested on a
+  real device; Security Rules published to the Firebase console (adds a `portfolio/{ticker}`
+  nested rule under `users/{userId}`, same ownership check). Read-only by design — no buy/sell
+  UI (that's Phase 4), so holdings were seeded manually in the Firestore console during Phase 3
+  testing.
+- **Phase 4 (broker / trade):** ✅ implemented and merged. Added buy/sell Firestore transactions to `UserRepository` (`executeBuy`/`executeSell`, single `runTransaction`, all-reads-before-writes, weighted-average cost basis), `TradeViewModel` (orchestrates live price + cash + owned qty, re-fetches a fresh price before executing), `TradeDialog` + `dialog_trade.xml`, and row-tap entry points in `MarketFragment`/`PortfolioFragment` that refresh in place via the Fragment Result API.
+  - **Resolved (was "Insufficient funds" issue):** Fixed silent profile omissions by hardening `executeBuy`/`executeSell` transactions to explicitly check for profile existence (`!userSnapshot.exists()`). Transactions now gracefully throw an "Account not set up" exception instead of falling back to 0.0 balance and causing false rejections.
+- **Phase 5 (polish):** ✅ fully implemented.
+  - **Portfolio totals & P/L:** `PortfolioViewModel` and `PortfolioPosition` accurately model live holdings value, total cash, and overall unrealized profit/loss dynamically.
+  - **Edge cases & States:** Empty states, loading spinners, invalid prices (market closed / <= 0.0), missing profiles, network errors, and invalid quantity trade attempts are all fully handled across the UI via robust exception routing and specific view logic.
 
 ## Build / run notes
 - Requires `app/google-services.json` (Firebase) — not committed.
@@ -83,5 +86,5 @@ Optimize for **speed and simplicity**, not production hardening. Flag academic s
 - After editing `gradle/libs.versions.toml`, run a Gradle sync — unresolved `libs.*`
   references almost always mean the catalog was edited since the last sync.
 
-## Cleanup TODO (untracked cruft that should be gitignored / removed)
-- `app/release/`, `commit_message.txt.bak`, `run_log.txt` — build/junk artifacts, do not commit.
+## Cleanup TODO
+- ✅ **Resolved:** Added `app/release/`, `commit_message.txt.bak`, `run_log.txt` to `.gitignore`.

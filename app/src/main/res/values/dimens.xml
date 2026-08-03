@@ -15,4 +15,5 @@
     <dimen name="brand_divider_width">32dp</dimen>
     <dimen name="hairline">1dp</dimen>
     <dimen name="stock_logo_size">40dp</dimen>
+    <dimen name="trade_price_progress_size">20dp</dimen>
 </resources>

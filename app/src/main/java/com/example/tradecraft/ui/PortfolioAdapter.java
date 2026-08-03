@@ -21,8 +21,18 @@ import java.util.Locale;
 /** Binds merged holdings + live-price positions to the Portfolio screen's RecyclerView. */
 public class PortfolioAdapter extends RecyclerView.Adapter<PortfolioAdapter.PositionViewHolder> {
 
+    /** Notified when a holding row is tapped, so the host can open the trade dialog. */
+    public interface OnPositionClickListener {
+        void onPositionClick(PortfolioPosition position);
+    }
+
     private final NumberFormat currencyFormat = NumberFormat.getCurrencyInstance(Locale.US);
     private final List<PortfolioPosition> positions = new ArrayList<>();
+    private OnPositionClickListener clickListener;
+
+    public void setOnPositionClickListener(OnPositionClickListener listener) {
+        this.clickListener = listener;
+    }
 
     public void submitList(List<PortfolioPosition> newPositions) {
         DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(new PositionDiffCallback(positions, newPositions));
@@ -40,7 +50,13 @@ public class PortfolioAdapter extends RecyclerView.Adapter<PortfolioAdapter.Posi
 
     @Override
     public void onBindViewHolder(@NonNull PositionViewHolder holder, int position) {
-        holder.bind(positions.get(position), currencyFormat);
+        PortfolioPosition portfolioPosition = positions.get(position);
+        holder.bind(portfolioPosition, currencyFormat);
+        holder.itemView.setOnClickListener(v -> {
+            if (clickListener != null) {
+                clickListener.onPositionClick(portfolioPosition);
+            }
+        });
     }
 
     @Override
